@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Open Any URL in about:blank</title>
+</head>
+<body>
+  <h2>Open URL in about:blank</h2>
+  <input type="text" id="urlInput" placeholder="Enter full URL (https://...)" style="width: 300px;">
+  <button onclick="goBlank()">Open</button>
+
+  <script>
+    function goBlank() {
+      const inputUrl = document.getElementById("urlInput").value;
+      if (!inputUrl || !inputUrl.startsWith("http")) {
+        alert("Please enter a valid URL starting with http:// or https://");
+        return;
+      }
+
+      const page = new ABC({
+        type: "blank",
+        url: inputUrl
+      });
+
+      page.open();
+      window.location.replace("https://google.com");
+    }
+
+    class ABC {
+      constructor(config = {}) {
+        this.type = config.type || "blank";
+        this.url = config.url || "about:blank";
+      }
+
+      getCode() {
+        return `<iframe style="height:100%; width: 100%; border: none; position: fixed; top: 0; right: 0; left: 0; bottom: 0;" sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation allow-top-navigation-by-user-activation" src="${this.url}"></iframe>`;
+      }
+
+      open() {
+        try {
+          const newTab = window.open("about:blank");
+          newTab.document.write(this.getCode());
+          newTab.document.close();
+        } catch (e) {
+          console.error("Failed to open about:blank tab:", e);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
